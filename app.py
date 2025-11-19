@@ -47,13 +47,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================================
-# Cargar modelo y encoder
+# Cargar modelo y preprocessor
 # ================================
 MODEL_PATH = "models/modelo_random_forest.pkl"
 ENCODER_PATH = "models/encoder_category.pkl"
 
 model = joblib.load(MODEL_PATH)
-encoder = joblib.load(ENCODER_PATH)
+preprocessor = joblib.load(ENCODER_PATH)
 
 # ================================
 # SIDEBAR (INFO PROFESIONAL)
@@ -113,7 +113,11 @@ with st.form("prediction_form"):
 
     st.markdown(f"**🔻 Descuento calculado automáticamente:** `{discount_percentage:.2f}%`")
 
-    category = st.selectbox("📂 Categoría del producto", encoder.classes_)
+    # Get unique categories from the preprocessor's one-hot encoder
+    cat_encoder = preprocessor.named_transformers_['cat']
+    categories = cat_encoder.categories_[0].tolist()
+    
+    category = st.selectbox("📂 Categoría del producto", categories)
 
     submitted = st.form_submit_button("🔍 Predecir éxito del producto")
 
@@ -121,21 +125,21 @@ with st.form("prediction_form"):
 # PREDICCIÓN
 # ================================
 if submitted:
-    # Codificar la categoría
-    category_encoded = encoder.transform([category])[0]
-
-    # Construir el DataFrame con las mismas features del entrenamiento
+    # Construir el DataFrame con las mismas features del entrenamiento (sin codificar)
     X = pd.DataFrame([{
         "discounted_price": discounted_price,
         "actual_price": actual_price,
         "discount_percentage": discount_percentage,
         "rating": rating,
         "rating_count": rating_count,
-        "category": category_encoded
+        "category": category
     }])
 
-    pred = model.predict(X)[0]
-    prob = float(model.predict_proba(X)[0][1])
+    # Apply the preprocessor transformation (one-hot encoding for category)
+    X_transformed = preprocessor.transform(X)
+
+    pred = model.predict(X_transformed)[0]
+    prob = float(model.predict_proba(X_transformed)[0][1])
 
     # Tarjeta de resultado
     st.markdown('<div class="result-card">', unsafe_allow_html=True)

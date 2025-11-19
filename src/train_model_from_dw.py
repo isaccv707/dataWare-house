@@ -3,7 +3,8 @@
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 import joblib
@@ -39,8 +40,8 @@ def load_data_from_dw() -> pd.DataFrame:
 
 def prepare_data(df: pd.DataFrame):
     """
-    Prepara X, y y el encoder de categoría a partir
-    del DataFrame leído desde el DW.
+    Prepara X, y a partir del DataFrame leído desde el DW.
+    Extrae la categoría de nivel superior del campo full_category.
     """
     df = df.copy()
 
@@ -58,9 +59,9 @@ def prepare_data(df: pd.DataFrame):
 
     df = df.dropna(subset=numeric_cols + ["category"])
 
-    # Codificar categoría (full_category) con LabelEncoder
-    encoder = LabelEncoder()
-    df["category_encoded"] = encoder.fit_transform(df["category"])
+    # Extract top-level category from hierarchical category string
+    # e.g., "Electronics|HomeTheater,TV&Video|Televisions" -> "Electronics"
+    df["category"] = df["category"].astype(str).str.split("|").str[0]
 
     feature_cols = [
         "discounted_price",
@@ -68,47 +69,61 @@ def prepare_data(df: pd.DataFrame):
         "discount_percentage",
         "rating",
         "rating_count",
-        "category_encoded",
+        "category",
     ]
 
     X = df[feature_cols]
     y = df["is_success"].astype(int)
 
-    return X, y, encoder
+    return X, y
 
 
-def train_and_save_model(X, y, encoder):
+def train_and_save_model(X, y):
     """
     Entrena el modelo RandomForest y guarda el modelo
-    y el encoder en la carpeta models/.
+    y el preprocessor en la carpeta models/.
     """
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
+    # Create preprocessor for one-hot encoding the category column
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('cat', OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore'), ['category'])
+        ],
+        remainder='passthrough'  # Keep numeric columns as-is
+    )
+
+    # Fit and transform training data
+    X_train_transformed = preprocessor.fit_transform(X_train)
+    X_test_transformed = preprocessor.transform(X_test)
+
     model = RandomForestClassifier(
         n_estimators=300,
+        max_depth=15,
+        min_samples_split=10,
         random_state=42,
         n_jobs=-1,
     )
 
-    model.fit(X_train, y_train)
+    model.fit(X_train_transformed, y_train)
 
     # Evaluación
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(X_test_transformed)
     acc = accuracy_score(y_test, y_pred)
 
     print(f"Accuracy del modelo (desde DW): {acc:.4f}")
     print("\nReporte de clasificación:")
     print(classification_report(y_test, y_pred))
 
-    # Guardar modelo y encoder (mismos nombres que usa app.py)
+    # Guardar modelo y preprocessor (mismos nombres que usa app.py)
     os.makedirs("models", exist_ok=True)
 
     joblib.dump(model, "models/modelo_random_forest.pkl")
-    joblib.dump(encoder, "models/encoder_category.pkl")
+    joblib.dump(preprocessor, "models/encoder_category.pkl")
 
-    print("\nModelo y encoder guardados en carpeta 'models/'.")
+    print("\nModelo y preprocessor guardados en carpeta 'models/'.")
 
 
 def main():
@@ -117,10 +132,10 @@ def main():
     print(f"Registros leídos: {len(df)}")
 
     print("Preparando datos para entrenamiento...")
-    X, y, encoder = prepare_data(df)
+    X, y = prepare_data(df)
 
     print("Entrenando modelo Random Forest...")
-    train_and_save_model(X, y, encoder)
+    train_and_save_model(X, y)
 
 
 if __name__ == "__main__":

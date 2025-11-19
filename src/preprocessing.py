@@ -20,6 +20,10 @@ def clean_dataset(df: pd.DataFrame):
 
     df = df.drop_duplicates()
 
+    # Extract top-level category from hierarchical category string
+    # e.g., "Electronics|HomeTheater,TV&Video|Televisions" -> "Electronics"
+    df["category"] = df["category"].astype(str).str.split("|").str[0]
+
     # Rellenar nulos
     df = df.fillna({
         "discounted_price": 0,
@@ -49,6 +53,22 @@ def prepare_features(df: pd.DataFrame):
         "discount_percentage",
         "rating",
         "rating_count",
+        "category"
+    ]]
+
+    y = df["is_success"]
+
+    return X, y
+
+def prepare_prelaunch_features(df: pd.DataFrame):
+    """
+    Prepare features for pre-launch model (new sellers without ratings).
+    Only uses pricing and category data.
+    """
+    X = df[[
+        "discounted_price",
+        "actual_price",
+        "discount_percentage",
         "category"
     ]]
 
