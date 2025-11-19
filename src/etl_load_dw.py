@@ -58,6 +58,64 @@ def clean_for_dw(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def ensure_dw_tables(conn):
+    """Create minimal DW tables (dims + fact) if they don't exist.
+
+    This is intentionally conservative: simple column types and
+    basic constraints to allow the ETL to run without external migrations.
+    """
+    cur = conn.cursor()
+
+    # Dimensión de categorías
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS dim_category (
+            category_key SERIAL PRIMARY KEY,
+            full_category TEXT UNIQUE,
+            main_category TEXT,
+            sub_category_1 TEXT,
+            sub_category_2 TEXT,
+            sub_category_3 TEXT,
+            sub_category_4 TEXT
+        );
+        """
+    )
+
+    # Dimensión de productos
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS dim_product (
+            product_key SERIAL PRIMARY KEY,
+            product_id TEXT UNIQUE,
+            product_name TEXT,
+            about_product TEXT,
+            img_link TEXT,
+            product_link TEXT
+        );
+        """
+    )
+
+    # Tabla de hechos
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS fact_product_performance (
+            fact_key SERIAL PRIMARY KEY,
+            product_key INTEGER REFERENCES dim_product(product_key),
+            category_key INTEGER REFERENCES dim_category(category_key),
+            discounted_price NUMERIC,
+            actual_price NUMERIC,
+            discount_percentage NUMERIC,
+            rating NUMERIC,
+            rating_count INTEGER,
+            is_success INTEGER
+        );
+        """
+    )
+
+    conn.commit()
+    cur.close()
+
+
 def insert_dim_category(df: pd.DataFrame, conn) -> dict:
     """Inserta categorías únicas en dim_category y devuelve un mapa full_category -> category_key."""
     cur = conn.cursor()
@@ -78,13 +136,14 @@ def insert_dim_category(df: pd.DataFrame, conn) -> dict:
             (cat, main_category, sub1, sub2, sub3, sub4)
         )
 
-    # Insertar
+    # Insertar (tabla en esquema público: dim_category)
     cur.executemany(
         """
-        INSERT INTO dw_amazon.dim_category (
+        INSERT INTO dim_category (
             full_category, main_category, sub_category_1, sub_category_2, sub_category_3, sub_category_4
         )
         VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (full_category) DO NOTHING
         """,
         records,
     )
@@ -92,7 +151,7 @@ def insert_dim_category(df: pd.DataFrame, conn) -> dict:
     conn.commit()
 
     # Crear diccionario full_category -> category_key
-    cur.execute("SELECT category_key, full_category FROM dw_amazon.dim_category")
+    cur.execute("SELECT category_key, full_category FROM dim_category")
     rows = cur.fetchall()
     cat_map = {full: key for key, full in rows}
 
@@ -121,10 +180,11 @@ def insert_dim_product(df: pd.DataFrame, conn) -> dict:
 
     cur.executemany(
         """
-        INSERT INTO dw_amazon.dim_product (
+        INSERT INTO dim_product (
             product_id, product_name, about_product, img_link, product_link
         )
         VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (product_id) DO NOTHING
         """,
         records,
     )
@@ -132,7 +192,7 @@ def insert_dim_product(df: pd.DataFrame, conn) -> dict:
     conn.commit()
 
     # Crear diccionario product_id -> product_key
-    cur.execute("SELECT product_key, product_id FROM dw_amazon.dim_product")
+    cur.execute("SELECT product_key, product_id FROM dim_product")
     rows = cur.fetchall()
     prod_map = {pid: key for key, pid in rows}
 
@@ -171,7 +231,7 @@ def insert_fact_product_performance(df: pd.DataFrame, conn, prod_map: dict, cat_
 
     cur.executemany(
         """
-        INSERT INTO dw_amazon.fact_product_performance (
+        INSERT INTO fact_product_performance (
             product_key, category_key,
             discounted_price, actual_price, discount_percentage,
             rating, rating_count, is_success
@@ -195,6 +255,9 @@ def main():
     conn = get_connection()
 
     try:
+        # Ensure tables exist before inserting
+        ensure_dw_tables(conn)
+
         print("Cargando dimensión de categorías...")
         cat_map = insert_dim_category(df_clean, conn)
         print(f"Categorías cargadas: {len(cat_map)}")

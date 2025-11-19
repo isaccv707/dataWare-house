@@ -20,14 +20,18 @@ def train_model():
     print("3) Creando variable objetivo (is_success)...")
     df = add_target(df)
 
-    print("4) Codificando categorías...")
+    print("4) Preparando X y y...")
+    X, y = prepare_features(df)
+    
+    print("5) Codificando categorías...")
     encoder = LabelEncoder()
-    df["category"] = encoder.fit_transform(df["category"])
+    X["category_encoded"] = encoder.fit_transform(X["category"])
+    # Guardar el mapeo de categorías para la app
     joblib.dump(encoder, ENCODER_PATH)
     print(f"Encoder guardado: {ENCODER_PATH}")
-
-    print("5) Preparando X y y...")
-    X, y = prepare_features(df)
+    
+    # Usar solo las columnas numéricas + category_encoded para el modelo
+    X = X.drop("category", axis=1)
 
     print("6) Train/Test split...")
     X_train, X_test, y_train, y_test = train_test_split(

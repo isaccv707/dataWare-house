@@ -1,6 +1,7 @@
 # src/train_model_from_dw.py
 
 import os
+import re
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -9,6 +10,33 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 
 from db_connection import get_connection
+
+
+def extract_clean_category(category_str: str) -> str:
+    """
+    Extrae la primera categoría (más general) de la jerarquía
+    y la limpia para mostrarla de forma legible.
+    
+    Ejemplo:
+    'Computers&Accessories|Cables|USBCables' -> 'Computers & Accessories'
+    'Electronics|HomeAudio|Speakers' -> 'Electronics'
+    """
+    if pd.isna(category_str) or category_str == "Unknown":
+        return "Unknown"
+    
+    # Tomar la PRIMERA parte de la jerarquía (más general)
+    parts = str(category_str).split("|")
+    first_part = parts[0] if parts else "Unknown"
+    
+    # Separar palabras pegadas con & o mayúsculas
+    # Separar por &
+    clean = first_part.replace("&", " & ")
+    # Insertar espacio antes de mayúsculas (CamelCase)
+    clean = re.sub(r'([a-z])([A-Z])', r'\1 \2', clean)
+    # Insertar espacio entre número/letra mayúscula y mayúscula siguiente
+    clean = re.sub(r'([0-9A-Z])([A-Z][a-z])', r'\1 \2', clean)
+    
+    return clean.strip()
 
 
 def load_data_from_dw() -> pd.DataFrame:
@@ -27,9 +55,9 @@ def load_data_from_dw() -> pd.DataFrame:
             f.rating_count,
             f.is_success,
             c.full_category AS category
-        FROM dw_amazon.fact_product_performance f
-        JOIN dw_amazon.dim_category c
-          ON f.category_key = c.category_key;
+                FROM fact_product_performance f
+                JOIN dim_category c
+                    ON f.category_key = c.category_key;
     """
 
     df = pd.read_sql_query(query, conn)
@@ -58,9 +86,16 @@ def prepare_data(df: pd.DataFrame):
 
     df = df.dropna(subset=numeric_cols + ["category"])
 
-    # Codificar categoría (full_category) con LabelEncoder
+    # Limpiar categorías para hacerlas más legibles
+    print("Limpiando nombres de categorías...")
+    df["category_display"] = df["category"].apply(extract_clean_category)
+    
+    print(f"Ejemplos de categorías limpias:")
+    print(df[["category", "category_display"]].drop_duplicates().head(10))
+
+    # Codificar categoría limpia con LabelEncoder
     encoder = LabelEncoder()
-    df["category_encoded"] = encoder.fit_transform(df["category"])
+    df["category_encoded"] = encoder.fit_transform(df["category_display"])
 
     feature_cols = [
         "discounted_price",

@@ -131,7 +131,7 @@ if submitted:
         "discount_percentage": discount_percentage,
         "rating": rating,
         "rating_count": rating_count,
-        "category": category_encoded
+        "category_encoded": category_encoded
     }])
 
     pred = model.predict(X)[0]
