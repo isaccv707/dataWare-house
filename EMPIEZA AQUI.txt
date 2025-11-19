@@ -1,0 +1,195 @@
+
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║     🚀 HERRAMIENTA DE PREDICCIÓN DE ÉXITO EN AMAZON 🚀       ║
+║                                                               ║
+║              ¡Bienvenido! ¡Empecemos!                         ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+📍 ESTÁS AQUÍ: Carpeta Principal del Proyecto
+
+═══════════════════════════════════════════════════════════════
+  ⚡ INICIO RÁPIDO (Elige Según Tu Experiencia)
+═══════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────┐
+│ 👶 ¿PRINCIPIANTE ABSOLUTO? ¡EMPIEZA AQUÍ!                   │
+│                                                             │
+│    1. Abre archivo: EMPIEZA_AQUI.md                         │
+│    2. O simplemente: Doble clic → SETUP.bat                 │
+│    3. Luego: Doble clic → RUN.bat                           │
+│                                                             │
+│    ¡Eso es todo! 🎉                                         │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 📖 ¿QUIERES MÁS DETALLES?                                   │
+│                                                             │
+│    Lee: INICIO_RAPIDO.md                                    │
+│    Guía completa para principiantes con capturas            │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 👨‍💻 ¿DESARROLLADOR?                                          │
+│                                                             │
+│    Lee: LEEME.md                                            │
+│    Documentación técnica completa                           │
+└─────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+  📂 ARCHIVOS IMPORTANTES (Qué Hace Cada Uno)
+═══════════════════════════════════════════════════════════════
+
+🔧 PARA INSTALAR Y EJECUTAR:
+   ⭐ SETUP.bat         → Ejecuta esto PRIMERO (instala todo)
+   ⭐ RUN.bat           → Ejecuta esto para lanzar la app
+   ⭐ STOP.bat          → Detener todos los servicios
+   ⭐ CHECK_SYSTEM.bat  → Verificar si todo funciona
+
+📚 PARA LEER Y APRENDER:
+   📄 EMPIEZA_AQUI.md           → Guía más simple (¡3 pasos!)
+   📄 INICIO_RAPIDO.md          → Guía completa para principiantes
+   📄 LEEME.md                  → Documentación completa
+   📄 INDICE_DOCS.md            → Encontrar cualquier documentación
+   📄 GUIA_VIDEO.md             → Hacer tutoriales en video
+   📄 CREAR_ACCESOS_DIRECTOS.md → Guía de atajos de escritorio
+
+💻 APLICACIONES:
+   🎯 app.py                      → Predictor de productos (con reseñas)
+   🚀 entrepreneur_advisor_app.py → Asesor de mercado (sin reseñas)
+
+🔧 AVANZADO (Para Desarrolladores):
+   • src/              → Código fuente
+   • data/             → Dataset
+   • models/           → Modelos ML
+   • docker-compose.yml → Configuración de BD
+
+═══════════════════════════════════════════════════════════════
+  🎯 QUÉ HACE ESTA HERRAMIENTA
+═══════════════════════════════════════════════════════════════
+
+Esta es una herramienta potenciada por IA que predice si un
+producto será exitoso en Amazon. Usa Machine Learning para
+analizar:
+
+   ✓ Calificaciones del producto
+   ✓ Número de reseñas
+   ✓ Punto de precio
+   ✓ Categoría del producto
+
+Dos Aplicaciones Incluidas:
+
+   1️⃣  Predictor de Éxito de Productos
+       Para productos que ya tienen reseñas de clientes
+       
+   2️⃣  Asesor de Emprendedores
+       Para productos NUEVOS (¡no se necesitan reseñas!)
+       Solo ingresa precio + categoría
+
+═══════════════════════════════════════════════════════════════
+  ⚠️  ¿PRIMERA VEZ AQUÍ? HAZ ESTO:
+═══════════════════════════════════════════════════════════════
+
+Paso 1: Instalar Requisitos (solo una vez)
+   ✓ Python 3.8+ → https://python.org/downloads
+   ✓ Docker Desktop → https://docker.com/products/docker-desktop
+   
+Paso 2: Configuración
+   ✓ Windows: Doble clic en SETUP.bat
+   ✓ Mac/Linux: Ejecuta ./setup.sh
+   
+Paso 3: Ejecutar
+   ✓ Windows: Doble clic en RUN.bat
+   ✓ Mac/Linux: Ejecuta ./run.sh
+
+═══════════════════════════════════════════════════════════════
+  🆘 ¿NECESITAS AYUDA?
+═══════════════════════════════════════════════════════════════
+
+Problema: "No sé por dónde empezar"
+   → Lee: EMPIEZA_AQUI.md (toma 2 minutos)
+
+Problema: "La configuración está fallando"
+   → Ejecuta: CHECK_SYSTEM.bat (diagnostica problemas)
+
+Problema: "Quiero más detalles"
+   → Lee: INICIO_RAPIDO.md (guía completa)
+
+Problema: "Soy desarrollador, muéstrame código"
+   → Lee: LEEME.md (documentación completa)
+
+Problema: "Quiero hacer un tutorial"
+   → Lee: GUIA_VIDEO.md (guía de creación de contenido)
+
+═══════════════════════════════════════════════════════════════
+  🎓 RUTA DE APRENDIZAJE
+═══════════════════════════════════════════════════════════════
+
+Principiante Absoluto (5 minutos):
+   1. Lee EMPIEZA_AQUI.md
+   2. Ejecuta SETUP.bat
+   3. Ejecuta RUN.bat
+   4. Juega con la app
+
+Quiero Entenderlo (30 minutos):
+   1. Lee INICIO_RAPIDO.md
+   2. Prueba ambas apps
+   3. Experimenta con diferentes entradas
+
+Convertirte en Usuario Avanzado (2 horas):
+   1. Lee LEEME.md completo
+   2. Crea atajos de escritorio
+   3. Explora todas las características
+
+Modo Desarrollador (5+ horas):
+   1. Lee documentación técnica
+   2. Estudia código fuente
+   3. Modifica y experimenta
+
+═══════════════════════════════════════════════════════════════
+  ✨ CARACTERÍSTICAS ESPECIALES
+═══════════════════════════════════════════════════════════════
+
+✅ Instalación de un clic (SETUP.bat)
+✅ Lanzamiento de un clic (RUN.bat)
+✅ Apertura automática del navegador
+✅ Hermosa interfaz web
+✅ Predicciones potenciadas por IA
+✅ Análisis en tiempo real
+✅ Información del mercado
+✅ No se requiere programación
+✅ Funciona sin conexión (después de configurar)
+✅ Múltiples apps en una
+
+═══════════════════════════════════════════════════════════════
+  🎉 ¿LISTO PARA EMPEZAR?
+═══════════════════════════════════════════════════════════════
+
+Elige tu camino:
+
+   🏃 ¿Solo quieres que funcione?
+      → Doble clic: SETUP.bat, luego RUN.bat
+      
+   📖 ¿Quieres aprender primero?
+      → Abre: EMPIEZA_AQUI.md o INICIO_RAPIDO.md
+      
+   🔍 ¿Quieres explorar?
+      → Abre: INDICE_DOCS.md
+      
+   ⚙️  ¿Quieres configurar?
+      → Abre: LEEME.md
+
+═══════════════════════════════════════════════════════════════
+
+              Hecho para Vendedores de Amazon
+                     ¡Predice el Éxito! 🚀
+
+═══════════════════════════════════════════════════════════════
+
+Última Actualización: Noviembre 2025
+Repositorio: https://github.com/isaccv707/dataWare-house
+¿Preguntas? Consulta INDICE_DOCS.md o crea un issue en GitHub
+
+═══════════════════════════════════════════════════════════════
